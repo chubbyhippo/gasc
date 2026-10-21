@@ -1,0 +1,56 @@
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes
+)
+
+(defvar
+  tapping-term      300
+  quick-tap-ms      200
+  require-prior-idle 250
+
+  left-side-keys       (q w e r t x c v b)
+  right-side-keys      (y u i o p n m , . /)
+  home-row-left-keys   (a s d f g z)
+  home-row-right-keys  (h j k l ;)
+)
+
+(deftemplate lhrm (tap-key hold-key)
+  (tap-hold-release-tap-keys-release $quick-tap-ms $tapping-term (multi $tap-key @tap) $hold-key $left-side-keys $home-row-left-keys)
+)
+
+(deftemplate rhrm (tap-key hold-key)
+  (tap-hold-release-tap-keys-release $quick-tap-ms $tapping-term (multi $tap-key @tap) $hold-key $right-side-keys $home-row-right-keys)
+)
+
+(defsrc
+  a s d f    j k l ;
+)
+
+(defvirtualkeys
+  to-base (layer-switch base)
+)
+
+(defalias
+  tap (multi
+    (layer-switch nomods)
+    (on-idle $require-prior-idle tap-virtualkey to-base)
+  )
+
+  a (t! lhrm a lmet)
+  s (t! lhrm s lalt)
+  d (t! lhrm d lsft)
+  f (t! lhrm f lctl)
+
+  j (t! rhrm j rctl)
+  k (t! rhrm k rsft)
+  l (t! rhrm l lalt)
+  ; (t! rhrm ; rmet)
+)
+
+(deflayer base
+  @a @s @d @f    @j @k @l @;
+)
+
+(deflayer nomods
+  a  s  d  f     j  k  l  ;
+)
